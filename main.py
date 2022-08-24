@@ -1,7 +1,7 @@
 #
 # Software para verificar se um determinado usuário curtiu uma foto específica
 # Autor: Lucas Vieira de Jesus <lucas.engen.cc@gmail.com>
-# Funciona apenas com as fotos públicas
+# Funciona com contas públicas e privadas (desde que você siga a conta privada)
 
 import instaloader
 import sys
