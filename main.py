@@ -3,8 +3,6 @@
 # Autor: Lucas Vieira de Jesus <lucas.engen.cc@gmail.com>
 # Funciona apenas com as fotos públicas
 
-from imp import load_compiled
-from types import NoneType
 import instaloader
 import sys
 import dotenv
@@ -76,25 +74,33 @@ if __name__ == "__main__":
 
     loader_instance = instaloader.Instaloader()
 
-    loader_instance.load_session_from_file()
+    # flag para determinar se o login precisa ser feito
+    skip_login = False
+
+    try:
+        loader_instance.load_session_from_file(credentials["username"])
+        skip_login = True
+    except FileNotFoundError:
+        print("[WARNING] Session not found")
     
     # Realiza o login
-    try:
-        print("[INFO] Logging in ...")
-        loader_instance.login(credentials["username"], credentials["password"])
-    except instaloader.exceptions.TwoFactorAuthRequiredException as err:
-        two_factor_code = input("[WARNING] Two factor code required. Insert it here: ")
-        print("[INFO] Code: {}".format(two_factor_code.strip()))
-
-        # Tenta realizar o login utilizando o código de autenticação em dois fatores
+    if skip_login == False:
         try:
-            loader_instance.two_factor_login(two_factor_code.strip())
-        except instaloader.exceptions.BadCredentialsException as fail:
-            print("[ERROR] Invalid credentials provided")
-            sys.exit(1)
+            print("[INFO] Logging in ...")
+            loader_instance.login(credentials["username"], credentials["password"])
+        except instaloader.exceptions.TwoFactorAuthRequiredException as err:
+            two_factor_code = input("[WARNING] Two factor code required. Insert it here: ")
+            print("[INFO] Code: {}".format(two_factor_code.strip()))
 
-    # Salva a sessão
-    loader_instance.save_session_to_file()
+            # Tenta realizar o login utilizando o código de autenticação em dois fatores
+            try:
+                loader_instance.two_factor_login(two_factor_code.strip())
+            except instaloader.exceptions.BadCredentialsException as fail:
+                print("[ERROR] Invalid credentials provided")
+                sys.exit(1)
+        
+        # Salva a sessão
+        loader_instance.save_session_to_file()
 
     print("[INFO] Finding out if user '{}' liked '{}' ...".format(username, resource))
     Post = instaloader.Post.from_shortcode(loader_instance.context, resource)
@@ -110,6 +116,6 @@ if __name__ == "__main__":
                 print("[INFO] {} liked the post :)".format(username))
                 sys.exit(0)
 
-        print("[INFO] {} don't liked the post :(".format(username))
+        print("[INFO] {} didn't liked the post :(".format(username))
     except instaloader.exceptions.LoginRequiredException as err:
         print("[ERROR] Can't get likes: {}".format(err))
