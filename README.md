@@ -25,7 +25,7 @@ echo "PASSWORD=mypassword" >> .env
 python main.py ChpewYuhfg4 instagram
 ```
 
-O comando a seguir irá verificar se o usuário `instagram` curtiu o post com ID `ChpewYuhfg4`
+O comando acima irá verificar se o usuário `instagram` curtiu o post com ID `ChpewYuhfg4`
 
 A URL pode ser obtida ao clicar no post. Veja o exemplo a seguir:
 
