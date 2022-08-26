@@ -109,7 +109,12 @@ if __name__ == "__main__":
         # Obtém as curtidas do post
         global likes
         
+        owner = Post.owner_username
+
+        print("[INFO] Checking if {} liked the post from {}".format(username, owner))
+
         likes = Post.get_likes()
+
         # Lista as curtidas
         for like in likes:
             if like.username == username:
@@ -119,3 +124,6 @@ if __name__ == "__main__":
         print("[INFO] {} didn't liked the post :(".format(username))
     except instaloader.exceptions.LoginRequiredException as err:
         print("[ERROR] Can't get likes: {}".format(err))
+    except instaloader.exceptions.BadResponseException as err:
+        print("[ERROR] Bad response received: {}".format(err))
+        print("Is the resource URL valid?")
