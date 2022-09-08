@@ -21,6 +21,7 @@ echo "PASSWORD=mypassword" >> .env
 
 2 - Execute o programa
 
+2.1 - Modo checagem de perfil
 ```bash
 python main.py ChpewYuhfg4 instagram
 ```
@@ -30,3 +31,11 @@ O comando acima irá verificar se o usuário `instagram` curtiu o post com ID `C
 A URL pode ser obtida ao clicar no post. Veja o exemplo a seguir:
 
 * `https://www.instagram.com/p/`<**POST ID**>
+
+2.1 - Modo snapshot
+
+O modo snapshot cria um serviço que te avisa por telegram/console quem deixou de te seguir
+
+```bash
+python main.py --snapshot
+```
