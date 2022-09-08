@@ -33,6 +33,8 @@ def get_followers(instance: instaloader.Instaloader, profile_name: str):
     for follower in followers_list:
         followers.append(follower.username)
 
+    send_message("Captura de seguidores finalizada: {} seguidores obtidos".format(len(followers)))
+
     return followers
 
 def compare_list(list1=[],list2=[]):
@@ -51,18 +53,6 @@ def compare_list(list1=[],list2=[]):
     
     return excluded
 
-
-def handle_cleanup(signum, frame):
-    print("[INFO] Cleaning up ...")
-    mux.acquire()
-    should_exit = True
-    mux.release()
-    exit(0)
-
-def setup_snapshot():
-    global mux, should_exit
-    mux = Lock()
-
 def calculate_time(timeout_string: str) -> int:
     valid_timeout_strings = {
         "2h": 3600, 
@@ -78,10 +68,6 @@ def calculate_time(timeout_string: str) -> int:
     return valid_timeout_strings[timeout_string]
 
 def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_str: str):
-
-    mux.acquire()
-    should_exit = False
-    mux.release()
 
     timeout = calculate_time(timeout_string=timeout_str)
 
