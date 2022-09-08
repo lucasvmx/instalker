@@ -15,7 +15,6 @@ def mask_2fa_code(code: str) -> str:
         return "*" * 6 
 
     for i in range(sz):
-        print(i)
         if i < 4:
             masked += "*"
         else:
