@@ -7,6 +7,9 @@ ExecStart=python3 /home/lucas/instalker/main.py --snapshot 12h
 WorkingDirectory=/home/lucas/instalker
 Restart=always
 RestartSec=10s
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=instalker
 
 [Install]
 WantedBy=multi-user.target

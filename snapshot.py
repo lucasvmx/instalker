@@ -33,8 +33,6 @@ def get_followers(instance: instaloader.Instaloader, profile_name: str):
     for follower in followers_list:
         followers.append(follower.username)
 
-    send_message("Captura de seguidores finalizada: {} seguidores obtidos".format(len(followers)))
-
     return followers
 
 def compare_list(list1=[],list2=[]):
