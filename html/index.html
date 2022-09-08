@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Two Factor Auth Code</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#button_send").click(function() {
+                console.log("clicado")
+                var code = $("#two_factor_code_input").val()
+
+                axios.post('http://127.0.0.1:3333/code', code, {
+                    headers: {
+                        "Content-Type": "text/plain"
+                    }
+                }).catch(function(err) {
+                    alert("Erro ao enviar request");
+                    console.error(`erro: ${err}`)
+                })
+            })
+        })
+    </script>
+</head>
+
+<body>
+    <center>
+        <h1>Instalker</h1>
+        <h3>Insira o código abaixo</h3>
+        <label>Código:</label>
+        <input title="Insira o código aqui" id="two_factor_code_input"></input>
+        <button title="Enviar" id="button_send">Enviar</button>
+    </center>
+</body>
+
+</html>
