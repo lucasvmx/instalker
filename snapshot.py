@@ -92,12 +92,14 @@ def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_st
     while True:
 
         # Verifica se o programa deve ser fechado
-        mux.acquire()
-        if should_exit:
+        print("[INFO] Checking of program should be closed")
+        if mux.acquire(blocking=False):
+            if should_exit:
+                mux.release()
+                break
             mux.release()
-            break
-            
-        mux.release()
+
+        print("[INFO] Checking completed")
 
         # Obtém a lista de seguidores a cada X horas
         old_followers = get_followers(instance, profile_name)
