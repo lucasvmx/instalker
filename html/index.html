@@ -8,16 +8,26 @@
     <script>
         $(document).ready(function() {
             $("#button_send").click(function() {
-                console.log("clicado")
+
+                const baseURL = "http://192.168.1.2:3333"
+
+                // obtém o valor do campo e envia para o servidor HTTP
                 var code = $("#two_factor_code_input").val()
 
-                axios.post('http://127.0.0.1:3333/code', code, {
+                axios.post(`${baseURL}/code`, code, {
                     headers: {
                         "Content-Type": "text/plain"
                     }
-                }).catch(function(err) {
-                    alert("Erro ao enviar request");
-                    console.error(`erro: ${err}`)
+                }).then(response => {
+                    alert("Código enviado com sucesso");
+
+                    console.info(`response: ${response}`)
+
+                    // envia request para derrubar o servidor HTTP
+                    axios.post(`${baseURL}/kill`);
+                }).catch(err => {
+                    alert("Erro ao enviar código");
+                    console.error(`Erro: ${err}`);
                 })
             })
         })
