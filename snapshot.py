@@ -16,6 +16,9 @@ def get_followers(instance: instaloader.Instaloader, profile_name: str):
     except instaloader.ProfileNotExistsException as e:
         print("[ERROR] The profile {} does not exists".format(profile_name))
         exit(1)
+    except instaloader.QueryReturnedBadRequestException as e:
+        print("[ERROR] Could not load profile: {}".format(e))
+        return [""]
 
     try:
         f = profile.get_followers()
@@ -101,10 +104,16 @@ def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_st
         sleep(timeout)
         current_followers = get_followers(instance, profile_name)
         sleep(timeout)
+
+        if len(current_followers) > 0:
+            print("[INFO] Followers checking completed! Current followers: {}".format(len(current_followers)))
+
+        if len(current_followers) == 0 or len(old_followers) == 0:
+            continue
+
         excluded = compare_list(old_followers, current_followers)
         if len(current_followers) < len(old_followers):
             for follower in excluded:
                 print("[INFO] {} unfollowed you".format(follower))
                 send_message("{} deixou de te seguir".format(follower))
-        else:
-            print("[INFO] Followers checking completed! Current followers: {}".format(len(current_followers)))
+            
