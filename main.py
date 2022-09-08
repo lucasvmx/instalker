@@ -8,7 +8,7 @@ import sys
 import dotenv
 from os import getenv
 from user_like import user_liked
-from snapshot import do_snapshot, setup_snapshot
+from snapshot import do_snapshot
 from login import perform_login
 from credentials import Credentials
 from threading import Lock
@@ -58,6 +58,7 @@ if __name__ == "__main__":
     if dotenv.find_dotenv() == "":
         print("[ERROR] Failed to load .env")
         sys.exit(1)
+
 
     dotenv.load_dotenv()
 
