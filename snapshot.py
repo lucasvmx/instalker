@@ -60,7 +60,7 @@ def handle_cleanup(signum, frame):
     exit(0)
 
 def setup_snapshot():
-    global mux
+    global mux, should_exit
     mux = Lock()
 
 def calculate_time(timeout_string: str) -> int:
@@ -79,8 +79,10 @@ def calculate_time(timeout_string: str) -> int:
 
 def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_str: str):
 
-    global should_exit
+    mux.acquire()
     should_exit = False
+    mux.release()
+
     timeout = calculate_time(timeout_string=timeout_str)
     
     print("[INFO] Setting up signal handlers ...")
@@ -93,11 +95,11 @@ def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_st
 
         # Verifica se o programa deve ser fechado
         print("[INFO] Checking of program should be closed")
-        if mux.acquire(blocking=False):
-            if should_exit:
-                mux.release()
-                break
+        mux.acquire()
+        if should_exit:
             mux.release()
+            break
+        mux.release()
 
         print("[INFO] Checking completed")
 
