@@ -17,6 +17,8 @@ pip install -r requirements.txt
 touch .env
 echo "USERNAME=mylogin" > .env
 echo "PASSWORD=mypassword" >> .env
+echo "TOKEN=mytelegrambottoken" >> .env
+echo "CHAT_ID=mytelegramchatid" >> .env
 ```
 
 2 - Execute o programa
@@ -37,5 +39,5 @@ A URL pode ser obtida ao clicar no post. Veja o exemplo a seguir:
 O modo snapshot cria um serviço que te avisa por telegram/console quem deixou de te seguir
 
 ```bash
-python main.py --snapshot
+python main.py --snapshot <timeout>
 ```
