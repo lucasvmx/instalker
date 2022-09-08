@@ -54,6 +54,7 @@ def perform_login(loader_instance: instaloader.Instaloader, creds: Credentials, 
             # Tenta realizar o login utilizando o código de autenticação em dois fatores
             try:
                 loader_instance.two_factor_login(two_factor_code.strip())
+                print("[INFO] Logged in")
             except instaloader.exceptions.BadCredentialsException as fail:
                 print("[ERROR] Invalid credentials provided")
                 sys.exit(1)

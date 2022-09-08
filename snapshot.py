@@ -17,7 +17,13 @@ def get_followers(instance: instaloader.Instaloader, profile_name: str):
         print("[ERROR] The profile {} does not exists".format(profile_name))
         exit(1)
 
-    followers_list = set(profile.get_followers())
+    try:
+        f = profile.get_followers()
+    except Exception as err:
+        print("[ERROR] Could not get followers list: {}".format(err))
+        return [""]
+
+    followers_list = set(f)
 
     followers = [""]
 
