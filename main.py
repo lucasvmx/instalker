@@ -7,6 +7,11 @@ import instaloader
 import sys
 import dotenv
 from os import getenv
+from user_like import user_liked
+from snapshot import do_snapshot, setup_snapshot
+from login import perform_login
+from credentials import Credentials
+from threading import Lock
 
 # nome do recurso (parte da URL)
 resource=''
@@ -14,32 +19,30 @@ resource=''
 # nome do usuário a ser verificado
 username=''
 
-# Dicionário que armazena as credenciais
-credentials = {
-    "username": "", 
-    "password": ""
-}
-
-def validate_credentials():
-    return len(credentials["username"]) > 0 and len(credentials["password"]) > 0
-
 def show_usage():
     """Exibe instruções de uso do programa
     e depois finaliza-o
     """
     
-    usage_str = '''Usage: python {} <resource> <username>
+    usage_str = '''Usage: python {} <username> <resource> or
+python {} --snapshot
 
 <resource>: name of resource to be searched
 <username>: name of user to check for likes
+--snapshot: run program in snapshot mode (unfollowers finder)
     '''
     
     print("[ERROR] Wrong number of arguments: {}\n".format(len(sys.argv)))
-    print(usage_str.format(sys.argv[0]))
+    print(usage_str.format(sys.argv[0], sys.argv[0]))
     sys.exit(1)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
+    snapshot_mode = False
+    skip_login = False
+
+    if len(sys.argv) == 2 and sys.argv[1] == "--snapshot":
+        snapshot_mode = True
+    elif len(sys.argv) != 3:
         show_usage()
 
     # Carrega as variáveis de ambiente
@@ -49,81 +52,38 @@ if __name__ == "__main__":
 
     dotenv.load_dotenv()
 
-    uname = getenv("USERNAME")
-    psw = getenv("PASSWORD")
-    if uname != None:
-        credentials["username"] = uname
-    if psw != None:
-        credentials["password"] = psw
+    try:
+        if getenv("SERVER_IP") is None:
+            raise Exception("wrong type")
 
-    if not validate_credentials():
-        print("[ERROR] Empty username or password")
+        size = len(getenv("SERVER_IP"))
+        if size == 0:
+            raise Exception("wrong length")
+    except Exception as e:
+        print("[ERROR] Invalid SERVER_IP setting: {}".format(e))
         sys.exit(1)
 
-    # Analisa os argumentos
-    for arg in sys.argv:
-        if arg == sys.argv[0]:
-            continue
+    # Obtém e valida as credenciais fornecidas
+    creds = Credentials()
+    if not creds.validate():
+        print("[ERROR] Invalid credentials")
+        sys.exit(1)
 
-        if resource == "":
-            resource = arg
-        elif username == "":
-            username = arg
-        else:
-            print("[WARNING] Ignoring {}".format(arg))
-
-    loader_instance = instaloader.Instaloader()
-
-    # flag para determinar se o login precisa ser feito
-    skip_login = False
+    # Cria a instância global
+    instance = instaloader.Instaloader()
 
     try:
-        loader_instance.load_session_from_file(credentials["username"])
+        instance.load_session_from_file(creds.get_user())
         skip_login = True
     except FileNotFoundError:
         print("[WARNING] Session not found")
-    
+
     # Realiza o login
-    if skip_login == False:
-        try:
-            print("[INFO] Logging in ...")
-            loader_instance.login(credentials["username"], credentials["password"])
-        except instaloader.exceptions.TwoFactorAuthRequiredException as err:
-            two_factor_code = input("[WARNING] Two factor code required. Insert it here: ")
-            print("[INFO] Code: {}".format(two_factor_code.strip()))
-
-            # Tenta realizar o login utilizando o código de autenticação em dois fatores
-            try:
-                loader_instance.two_factor_login(two_factor_code.strip())
-            except instaloader.exceptions.BadCredentialsException as fail:
-                print("[ERROR] Invalid credentials provided")
-                sys.exit(1)
-        
-        # Salva a sessão
-        loader_instance.save_session_to_file()
-
-    print("[INFO] Finding out if user '{}' liked '{}' ...".format(username, resource))
-    Post = instaloader.Post.from_shortcode(loader_instance.context, resource)
-
-    try:
-        # Obtém as curtidas do post
-        global likes
-        
-        owner = Post.owner_username
-
-        print("[INFO] Checking if {} liked the post from {}".format(username, owner))
-
-        likes = Post.get_likes()
-
-        # Lista as curtidas
-        for like in likes:
-            if like.username == username:
-                print("[INFO] {} liked the post :)".format(username))
-                sys.exit(0)
-
-        print("[INFO] {} didn't liked the post :(".format(username))
-    except instaloader.exceptions.LoginRequiredException as err:
-        print("[ERROR] Can't get likes: {}".format(err))
-    except instaloader.exceptions.BadResponseException as err:
-        print("[ERROR] Bad response received: {}".format(err))
-        print("Is the resource URL valid?")
+    perform_login(instance, creds, skip_login)
+    
+    if snapshot_mode == True:
+        setup_snapshot()
+        do_snapshot(instance, creds.get_user())
+    else:
+        # Realiza a tarefa de verificar se um usuário curtiu o post
+        user_liked(instance)
