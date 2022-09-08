@@ -100,7 +100,6 @@ if __name__ == "__main__":
         sys.exit(1)
 
     if snapshot_mode == True:
-        setup_snapshot()
         do_snapshot(instance, creds.get_user(), timeout_str=timeout_string)
     else:
         # Realiza a tarefa de verificar se um usuário curtiu o post
