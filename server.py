@@ -1,11 +1,12 @@
 from flask import Flask, request
 from flask_cors import CORS
-from os import getenv
+from os import getenv, kill, getpid
+from signal import signal, SIGTERM, SIGINT
 from two_factor_code import on_code_received
 from threading import Thread
+from time import sleep
 
 app = Flask(__name__, static_folder="html")
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route("/", methods=["GET"])
 def handle():
@@ -21,7 +22,16 @@ def show_code():
         "code_received": code_received
     }
 
+@app.route("/kill", methods=["POST"])
+def kill_server():
+    print("[INFO] Waiting to stop server {}".format(getpid()))
+    kill(getpid(), SIGINT)
+
+    return {
+        "stopping": True
+    }
+
+
 def start_http_server():
-    t = Thread(target=app.run(getenv("SERVER_IP"), port=3333, debug=False))
-    t.start()
-    
+    CORS(app, resources=r"/*")
+    app.run(getenv("SERVER_IP"), port=3333, debug=False)

@@ -4,6 +4,7 @@ from time import sleep
 from sys import exit
 from signal import signal, SIGTERM, SIGINT
 from threading import Lock
+from bot import send_message
 
 def get_followers(instance: instaloader.Instaloader, profile_name: str):
 
@@ -53,14 +54,31 @@ def setup_snapshot():
     global mux
     mux = Lock()
 
-def do_snapshot(instance: instaloader.Instaloader, profile_name: str):
+def calculate_time(timeout_string: str) -> int:
+    valid_timeout_strings = {
+        "2h": 3600, 
+        "4h": 14400, 
+        "6h": 21600, 
+        "12h": 43200, 
+        "24h": 86400
+    }
+
+    if not timeout_string in valid_timeout_strings.keys():
+        return 0
+
+    return valid_timeout_strings[timeout_string]
+
+def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_str: str):
 
     global should_exit
     should_exit = False
+    timeout = calculate_time(timeout_string=timeout_str)
     
     print("[INFO] Setting up signal handlers ...")
     signal(SIGTERM, handle_cleanup)
     signal(SIGINT, handle_cleanup)
+
+    send_message("Capturando snapshot de seguidores a cada {}".format(timeout_str))
 
     while True:
 
@@ -72,14 +90,15 @@ def do_snapshot(instance: instaloader.Instaloader, profile_name: str):
             
         mux.release()
 
-        # Obtém a lista de seguidores a cada 12 horas
+        # Obtém a lista de seguidores a cada X horas
         old_followers = get_followers(instance, profile_name)
-        sleep(43200)
+        sleep(timeout)
         current_followers = get_followers(instance, profile_name)
-        sleep(43200)
+        sleep(timeout)
         excluded = compare_list(old_followers, current_followers)
         if len(current_followers) < len(old_followers):
             for follower in excluded:
                 print("[INFO] {} unfollowed you".format(follower))
+                send_message("{} deixou de te seguir".format(follower))
         else:
             print("[INFO] Followers checking completed! Current followers: {}".format(len(current_followers)))

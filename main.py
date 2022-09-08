@@ -12,6 +12,9 @@ from snapshot import do_snapshot, setup_snapshot
 from login import perform_login
 from credentials import Credentials
 from threading import Lock
+from bot import setup_bot, send_message
+
+valid_timeout_strings = ["2h", "4h", "6h", "12h", "24h"]
 
 # nome do recurso (parte da URL)
 resource=''
@@ -25,11 +28,12 @@ def show_usage():
     """
     
     usage_str = '''Usage: python {} <username> <resource> or
-python {} --snapshot
+python {} --snapshot <timeout>
 
 <resource>: name of resource to be searched
 <username>: name of user to check for likes
 --snapshot: run program in snapshot mode (unfollowers finder)
+<timeout>: can be 2h, 4h, 6h, 12h or 24h
     '''
     
     print("[ERROR] Wrong number of arguments: {}\n".format(len(sys.argv)))
@@ -39,9 +43,14 @@ python {} --snapshot
 if __name__ == "__main__":
     snapshot_mode = False
     skip_login = False
+    timeout_string = ''
 
-    if len(sys.argv) == 2 and sys.argv[1] == "--snapshot":
+    if len(sys.argv) == 3 and sys.argv[1] == "--snapshot":
         snapshot_mode = True
+        timeout_string = sys.argv[2]
+        if not timeout_string in valid_timeout_strings:
+            print("[ERROR] INVALID TIMEOUT STRING SPECIFIED")
+            show_usage()
     elif len(sys.argv) != 3:
         show_usage()
 
@@ -51,6 +60,10 @@ if __name__ == "__main__":
         sys.exit(1)
 
     dotenv.load_dotenv()
+
+    # configura o BOT do telegram
+    setup_bot()
+    send_message("Instalker starting :)")
 
     try:
         if getenv("SERVER_IP") is None:
@@ -79,11 +92,15 @@ if __name__ == "__main__":
         print("[WARNING] Session not found")
 
     # Realiza o login
-    perform_login(instance, creds, skip_login)
-    
+    try:
+        perform_login(instance, creds, skip_login)
+    except Exception as err:
+        print("[ERROR] Could not login: {}".format(err))
+        sys.exit(1)
+
     if snapshot_mode == True:
         setup_snapshot()
-        do_snapshot(instance, creds.get_user())
+        do_snapshot(instance, creds.get_user(), timeout_str=timeout_string)
     else:
         # Realiza a tarefa de verificar se um usuário curtiu o post
         user_liked(instance)

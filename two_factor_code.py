@@ -1,18 +1,12 @@
 from threading import Lock
+from multiprocessing import Pipe
 
-TWO_FACTOR_AUTH = ''
-mx = Lock()
+read_channel, write_channel = Pipe(duplex=False)
 
 def on_code_received(code: str):
-    print("[INFO] Two factor auth received: {}".format(code))
-    mx.acquire()
-    TWO_FACTOR_AUTH = code
-    mx.release()
+    write_channel.send(str(code))
 
 def get_two_factor_code() -> str:
     c = ''
-    mx.acquire()
-    if len(TWO_FACTOR_AUTH) > 0:
-        c = TWO_FACTOR_AUTH
-    mx.release()
-    return c
+    c = read_channel.recv()
+    return str(c)
