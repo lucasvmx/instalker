@@ -1,10 +1,10 @@
 [Unit]
-Description=Serviço de verificação do Instagram
+Description=Instagram checking service
 
 [Service]
 Type=simple
-ExecStart=python3 /home/lucas/instalker/main.py --snapshot 12h
-WorkingDirectory=/home/lucas/instalker
+ExecStart=python3 /opt/instalker/main.py --snapshot 12h
+WorkingDirectory=/opt/instalker
 Restart=always
 RestartSec=10s
 StandardOutput=syslog
