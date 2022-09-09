@@ -2,6 +2,7 @@ from os import getenv
 from requests import get
 from urllib import parse
 from sys import exit
+from logging import error, info
 
 def setup_bot():
     global baseURL, CHAT_ID, TOKEN
@@ -14,7 +15,7 @@ def setup_bot():
         len(CHAT_ID)
         len(TOKEN)
     except:
-        print("[ERROR] Please setup CHAT_ID and TOKEN")
+        error("please setup CHAT_ID and TOKEN")
         exit(1)
 
 def buildURL(token: str, chatId: str, msg: str) -> str: 
@@ -26,5 +27,8 @@ def buildURL(token: str, chatId: str, msg: str) -> str:
 
 def send_message(msg: str):
     full_msg = "[INSTALKER] {}".format(msg)
-    response_obj = get(url=buildURL(TOKEN, CHAT_ID, full_msg))
-    print("[INFO] Request status: {}".format(response_obj.status_code))
+    try:
+        response_obj = get(url=buildURL(TOKEN, CHAT_ID, full_msg))
+        info("telegram message sent. Status code: {}".format(response_obj.status_code))
+    except Exception as err:
+        error("failed to sent telegram message: {}".format(err))

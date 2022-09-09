@@ -1,6 +1,7 @@
 from sys import argv, exit
 from instaloader import Instaloader, Post
 from instaloader.exceptions import LoginRequiredException, BadResponseException
+from logging import warn, info, error
 
 def parse_args():
     username = ""
@@ -16,7 +17,7 @@ def parse_args():
         elif username == "":
             username = arg
         else:
-            print("[WARNING] Ignoring {}".format(arg))
+            warn("Ignoring {}".format(arg))
     
     return {
         "username": username,
@@ -29,7 +30,7 @@ def user_liked(loader_instance: Instaloader):
     username = data["username"]
     resource = data["resource"]
 
-    print("[INFO] Finding out if user '{}' liked '{}' ...".format(username, resource))
+    info("finding out if user '{}' liked '{}' ...".format(username, resource))
     post = Post.from_shortcode(loader_instance.context, resource)
 
     try:
@@ -38,19 +39,19 @@ def user_liked(loader_instance: Instaloader):
         
         owner = post.owner_username
 
-        print("[INFO] Checking if {} liked the post from {}".format(username, owner))
+        info("checking if {} liked the post from {}".format(username, owner))
 
         likes = post.get_likes()
 
         # Lista as curtidas
         for like in likes:
             if like.username == username:
-                print("[INFO] {} liked the post :)".format(username))
+                info("{} liked the post :)".format(username))
                 exit(0)
 
-        print("[INFO] {} didn't liked the post :(".format(username))
+        info("{} didn't liked the post :(".format(username))
     except LoginRequiredException as err:
-        print("[ERROR] Can't get likes: {}".format(err))
+        error("can't get likes: {}".format(err))
     except BadResponseException as err:
-        print("[ERROR] Bad response received: {}".format(err))
-        print("Is the resource URL valid?")
+        error("bad response received: {}".format(err))
+        error("is the resource URL valid?")

@@ -3,6 +3,7 @@ from flask_cors import CORS
 from os import getenv, kill, getpid
 from signal import SIGINT
 from two_factor_code import on_code_received
+from logging import info
 
 app = Flask(__name__, static_folder="html")
 
@@ -12,7 +13,7 @@ def handle():
 
 @app.route("/code", methods=["POST"])
 def show_code():
-    print("[INFO] POST on /code endpoint")
+    info("received POST on /code")
     code_received = request.data.decode()
     on_code_received(code_received)
 
@@ -22,7 +23,7 @@ def show_code():
 
 @app.route("/kill", methods=["POST"])
 def kill_server():
-    print("[INFO] Waiting to stop server {}".format(getpid()))
+    info("waiting to stop server {}".format(getpid()))
     kill(getpid(), SIGINT)
 
     return {

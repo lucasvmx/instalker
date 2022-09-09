@@ -3,6 +3,7 @@
 # Autor: Lucas Vieira de Jesus <lucas.engen.cc@gmail.com>
 # Funciona com contas públicas e privadas (desde que você siga a conta privada)
 
+import logging
 import instaloader
 from sys import exit, argv
 import dotenv
@@ -12,6 +13,8 @@ from snapshot import do_snapshot
 from login import perform_login
 from credentials import Credentials
 from bot import setup_bot, send_message
+from logging import error, info, basicConfig, warn, DEBUG
+from time import time
 
 valid_timeout_strings = ["2h", "4h", "6h", "12h", "24h"]
 
@@ -20,6 +23,7 @@ resource=''
 
 # nome do usuário a ser verificado
 username=''
+
 
 def show_usage():
     """Exibe instruções de uso do programa
@@ -44,18 +48,27 @@ if __name__ == "__main__":
     skip_login = False
     timeout_string = ''
 
+    # configura o logger
+    unix_time = int(time())
+
+    filename = 'instalker_{}.log'.format(unix_time)
+    basicConfig(filename=filename, filemode='w', 
+    format='%(asctime)s %(name)s - [%(levelname)s]: %(message)s', level=DEBUG,
+    datefmt='%d/%m/%Y %H:%M:%S')
+
     if len(argv) == 3 and argv[1] == "--snapshot":
         snapshot_mode = True
         timeout_string = argv[2]
         if not timeout_string in valid_timeout_strings:
             print("[ERROR] INVALID TIMEOUT STRING SPECIFIED")
+            error("invalid timeout string specified: {}".format(timeout_string))
             show_usage()
     elif len(argv) != 3:
         show_usage()
 
     # Carrega as variáveis de ambiente
     if dotenv.find_dotenv() == "":
-        print("[ERROR] Failed to load .env")
+        error("[ERROR] Failed to load .env")
         exit(1)
 
 
@@ -73,13 +86,13 @@ if __name__ == "__main__":
         if size == 0:
             raise Exception("wrong length")
     except Exception as e:
-        print("[ERROR] Invalid SERVER_IP setting: {}".format(e))
+        error("invalid SERVER_IP setting: {}".format(e))
         exit(1)
 
     # Obtém e valida as credenciais fornecidas
     creds = Credentials()
     if not creds.validate():
-        print("[ERROR] Invalid credentials")
+        error("invalid credentials")
         exit(1)
 
     # Cria a instância global
@@ -89,16 +102,17 @@ if __name__ == "__main__":
         instance.load_session_from_file(creds.get_user())
         skip_login = True
     except FileNotFoundError:
-        print("[WARNING] Session not found")
+        warn("session not found")
 
     # Realiza o login
     try:
         perform_login(instance, creds, skip_login)
     except Exception as err:
-        print("[ERROR] Could not login: {}".format(err))
+        error("could not login: {}".format(err))
         exit(1)
 
     if snapshot_mode == True:
+        info("starting snapshot mode ...")
         do_snapshot(instance, creds.get_user(), timeout_str=timeout_string)
     else:
         # Realiza a tarefa de verificar se um usuário curtiu o post
