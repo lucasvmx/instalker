@@ -11,6 +11,7 @@ def get_followers(instance: instaloader.Instaloader, profile_name: str):
     try:
         global profile 
         profile = instaloader.Profile.from_username(instance.context, username=profile_name)
+        info("loaded profile {}".format(profile_name))
     except instaloader.ProfileNotExistsException as e:
         error("the profile {} does not exists".format(profile_name))
         exit(1)
@@ -31,6 +32,7 @@ def get_followers(instance: instaloader.Instaloader, profile_name: str):
     for follower in followers_list:
         followers.append(follower.username)
 
+    info("fetched {} followers from {}".format(len(followers), profile_name))
     return followers
 
 def compare_list(list1=[],list2=[]):
