@@ -8,6 +8,8 @@ if [ "$UID" != 0 ]; then
 fi
 
 mkdir -p $INSTALL_PATH
+cp *.py $INSTALL_PATH -vv
+cp .env $INSTALL_PATH -vv
 cp instalker.service /etc/systemd/system -vv
 systemctl daemon-reload
 systemctl start instalker
