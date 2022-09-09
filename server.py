@@ -1,10 +1,8 @@
 from flask import Flask, request
 from flask_cors import CORS
 from os import getenv, kill, getpid
-from signal import signal, SIGTERM, SIGINT
+from signal import SIGINT
 from two_factor_code import on_code_received
-from threading import Thread
-from time import sleep
 
 app = Flask(__name__, static_folder="html")
 

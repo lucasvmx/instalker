@@ -1,11 +1,10 @@
 import instaloader
 from credentials import Credentials
-import sys
-from threading import Lock, Thread
+from sys import exit
 from time import sleep
 from server import start_http_server
 from two_factor_code import get_two_factor_code
-from multiprocessing import Process, Pipe
+from multiprocessing import Process
 from bot import send_message
 
 def mask_2fa_code(code: str) -> str:
@@ -47,6 +46,7 @@ def perform_login(loader_instance: instaloader.Instaloader, creds: Credentials, 
                 two_factor_code = get_two_factor_code()
                 if len(two_factor_code) > 0:
                     break
+                sleep(1)
 
             print("[INFO] Code received from server: {}".format(mask_2fa_code(two_factor_code.strip())))
 
@@ -56,7 +56,7 @@ def perform_login(loader_instance: instaloader.Instaloader, creds: Credentials, 
                 print("[INFO] Logged in")
             except instaloader.exceptions.BadCredentialsException as fail:
                 print("[ERROR] Invalid credentials provided")
-                sys.exit(1)
+                exit(1)
         
         
         # Salva a sessão

@@ -1,4 +1,3 @@
-from threading import Lock
 from multiprocessing import Pipe
 
 read_channel, write_channel = Pipe(duplex=False)

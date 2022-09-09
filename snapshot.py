@@ -1,9 +1,6 @@
-from credentials import Credentials
 import instaloader
 from time import sleep
 from sys import exit
-from signal import signal, SIGTERM, SIGINT
-from threading import Lock
 from bot import send_message
 
 def get_followers(instance: instaloader.Instaloader, profile_name: str):
