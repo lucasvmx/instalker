@@ -3,7 +3,6 @@
 # Autor: Lucas Vieira de Jesus <lucas.engen.cc@gmail.com>
 # Funciona com contas públicas e privadas (desde que você siga a conta privada)
 
-import logging
 import instaloader
 from sys import exit, argv
 import dotenv
@@ -15,6 +14,7 @@ from credentials import Credentials
 from bot import setup_bot, send_message
 from logging import error, info, basicConfig, warn, INFO
 from time import time
+from os import mkdir
 
 valid_timeout_strings = ["2h", "4h", "6h", "12h", "24h"]
 
@@ -48,11 +48,15 @@ if __name__ == "__main__":
     skip_login = False
     timeout_string = ''
 
+    # cria a pasta de armazenamento dos logs
+    try:
+        mkdir("logs")
+    except FileExistsError:
+        pass
+    
     # configura o logger
-    unix_time = int(time())
-
-    filename = 'instalker_{}.log'.format(unix_time)
-    basicConfig(filename=filename, filemode='w', 
+    filename = 'logs/instalker.log'
+    basicConfig(filename=filename, filemode='a', 
     format='%(asctime)s %(name)s - [%(levelname)s]: %(message)s', level=INFO,
     datefmt='%d/%m/%Y %H:%M:%S')
 
