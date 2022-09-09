@@ -13,7 +13,7 @@ from snapshot import do_snapshot
 from login import perform_login
 from credentials import Credentials
 from bot import setup_bot, send_message
-from logging import error, info, basicConfig, warn, DEBUG
+from logging import error, info, basicConfig, warn, INFO
 from time import time
 
 valid_timeout_strings = ["2h", "4h", "6h", "12h", "24h"]
@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
     filename = 'instalker_{}.log'.format(unix_time)
     basicConfig(filename=filename, filemode='w', 
-    format='%(asctime)s %(name)s - [%(levelname)s]: %(message)s', level=DEBUG,
+    format='%(asctime)s %(name)s - [%(levelname)s]: %(message)s', level=INFO,
     datefmt='%d/%m/%Y %H:%M:%S')
 
     if len(argv) == 3 and argv[1] == "--snapshot":
