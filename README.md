@@ -61,19 +61,10 @@ echo "TOKEN=mytelegrambottoken" >> .env
 echo "CHAT_ID=mytelegramchatid" >> .env
 ```
 
-
-
-2 - Configure o serviço
-
-```bash
-vim instalker.service
-```
-
 3 - Instale o serviço
 ```bash
-sudo cp instalker.service /etc/systemd/system -vv
-sudo systemctl daemon-reload
-sudo systemctl start instalker
+sudo su
+./install.sh
 ```
 
 Se o serviço for configurado corretamente, você receberá uma mensagem no telegram avisando que o programa foi carregado
