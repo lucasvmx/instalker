@@ -2,25 +2,26 @@ import instaloader
 from time import sleep
 from sys import exit
 from bot import send_message
+from logging import info, error
 
 def get_followers(instance: instaloader.Instaloader, profile_name: str):
 
-    print("[INFO] Getting followers of {}".format(profile_name))
+    info("getting followers of {}".format(profile_name))
 
     try:
         global profile 
         profile = instaloader.Profile.from_username(instance.context, username=profile_name)
     except instaloader.ProfileNotExistsException as e:
-        print("[ERROR] The profile {} does not exists".format(profile_name))
+        error("the profile {} does not exists".format(profile_name))
         exit(1)
     except instaloader.QueryReturnedBadRequestException as e:
-        print("[ERROR] Could not load profile: {}".format(e))
+        error("could not load profile: {}".format(e))
         return [""]
 
     try:
         f = profile.get_followers()
     except Exception as err:
-        print("[ERROR] Could not get followers list: {}".format(err))
+        error("could not get followers list: {}".format(err))
         return [""]
 
     followers_list = set(f)
@@ -71,20 +72,30 @@ def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_st
     while True:
 
         # Obtém a lista de seguidores a cada X horas
-        old_followers = get_followers(instance, profile_name)
+        while True:
+            old_followers = get_followers(instance, profile_name)
+            if len(old_followers) == 0:
+                error("failed to get followers list #1")
+                sleep(300)
+                continue
+            break
+
         sleep(timeout)
-        current_followers = get_followers(instance, profile_name)
+        while True:
+            current_followers = get_followers(instance, profile_name)
+            if len(current_followers) == 0:
+                error("failed to get followers list #2")
+                sleep(300)
+                continue
+            break
+    
         sleep(timeout)
 
-        if len(current_followers) > 0:
-            print("[INFO] Followers checking completed! Current followers: {}".format(len(current_followers)))
-
-        if len(current_followers) == 0 or len(old_followers) == 0:
-            continue
+        info("followers checking completed! Current followers: {}".format(len(current_followers)))
 
         excluded = compare_list(old_followers, current_followers)
         if len(current_followers) < len(old_followers):
             for follower in excluded:
-                print("[INFO] {} unfollowed you".format(follower))
+                info("{} unfollowed you".format(follower))
                 send_message("{} deixou de te seguir".format(follower))
             
