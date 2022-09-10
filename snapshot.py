@@ -90,8 +90,6 @@ def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_st
                 sleep(300)
                 continue
             break
-    
-        sleep(timeout)
 
         info("followers checking completed! Current followers: {}".format(len(current_followers)))
 
@@ -100,4 +98,6 @@ def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_st
             for follower in excluded:
                 info("{} unfollowed you".format(follower))
                 send_message("{} deixou de te seguir".format(follower))
+        
+        sleep(timeout)
             
