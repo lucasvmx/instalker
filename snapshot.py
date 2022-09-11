@@ -94,7 +94,7 @@ def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_st
         info("followers checking completed! Current followers: {}".format(len(current_followers)))
 
         excluded = compare_list(old_followers, current_followers)
-        if len(current_followers) < len(old_followers):
+        if len(excluded) > 0:
             for follower in excluded:
                 info("{} unfollowed you".format(follower))
                 send_message("{} deixou de te seguir".format(follower))
