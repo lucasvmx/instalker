@@ -13,7 +13,7 @@ from login import perform_login
 from credentials import Credentials
 from bot import setup_bot, send_message
 from logging import error, info, basicConfig, warn, INFO
-from time import time
+from two_factor_code import setup_pipe
 from os import mkdir
 
 valid_timeout_strings = ["2h", "4h", "6h", "12h", "24h"]
@@ -107,6 +107,9 @@ if __name__ == "__main__":
         skip_login = True
     except FileNotFoundError:
         warn("session not found")
+
+    # Configure o pipe
+    setup_pipe()
 
     # Realiza o login
     try:

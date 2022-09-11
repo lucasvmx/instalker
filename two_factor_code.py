@@ -1,7 +1,10 @@
 from multiprocessing import Pipe
 from logging import info
 
-read_channel, write_channel = Pipe(duplex=False)
+def setup_pipe():
+    global read_channel, write_channel
+    read_channel, write_channel = Pipe(duplex=False)
+    info("pipe configured successfully")
 
 def on_code_received(code: str):
     write_channel.send(str(code))
