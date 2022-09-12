@@ -74,7 +74,7 @@ def calculate_time(timeout_string: str) -> int:
 
     return valid_timeout_strings[timeout_string]
 
-def verify_user_action(username: str, old_followers:list[str], current_followers:list[str]) -> int:
+def verify_user_action(username: str, old_followers=[], current_followers=[]) -> int:
     if username in old_followers and username not in current_followers:
         return UNFOLLOWED 
     elif username in current_followers and username not in old_followers:
