@@ -1,6 +1,6 @@
 # Instalker
 
-Ferramenta simples criada para verificar se um usuário curtiu um determinado post. Suporta a autenticação de dois
+Ferramenta simples criada para verificar se um usuário curtiu um determinado post ou se alguém deixou de te seguir. Suporta a autenticação de dois
 fatores
 
 # Instalação
