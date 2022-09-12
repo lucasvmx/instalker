@@ -1,8 +1,17 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import instaloader
 from time import sleep
 from sys import exit
 from bot import send_message
 from logging import info, error
+
+# User actions ID's
+FOLLOWED = 1
+UNFOLLOWED = 2
+STAYED = 3
+NOT_FOLLOWEE = 4
 
 def get_followers(instance: instaloader.Instaloader, profile_name: str):
 
@@ -65,6 +74,16 @@ def calculate_time(timeout_string: str) -> int:
 
     return valid_timeout_strings[timeout_string]
 
+def verify_user_action(username: str, old_followers:list[str], current_followers:list[str]) -> int:
+    if username in old_followers and username not in current_followers:
+        return UNFOLLOWED 
+    elif username in current_followers and username not in old_followers:
+        return FOLLOWED
+    elif username not in old_followers and username not in current_followers:
+        return NOT_FOLLOWEE
+
+    return STAYED
+
 def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_str: str):
 
     timeout = calculate_time(timeout_string=timeout_str)
@@ -96,8 +115,12 @@ def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_st
         excluded = compare_list(old_followers, current_followers)
         if len(excluded) > 0:
             for follower in excluded:
-                info("{} unfollowed you".format(follower))
-                send_message("{} deixou de te seguir".format(follower))
+                action = verify_user_action(follower, old_followers, current_followers)
+                if action == UNFOLLOWED:
+                    info("{} unfollowed you".format(follower))
+                    send_message("{} deixou de te seguir".format(follower))
+                elif action == FOLLOWED:
+                    info("{} started to follow you".format(follower))
+                    send_message("{} começou a te seguir".format(follower))
         
         sleep(timeout)
-            
