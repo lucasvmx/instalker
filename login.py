@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import instaloader
 from credentials import Credentials
 from sys import exit

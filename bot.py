@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from os import getenv
 from requests import get
 from urllib import parse

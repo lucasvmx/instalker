@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from flask import Flask, request
 from flask_cors import CORS
 from os import getenv, kill, getpid

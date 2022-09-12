@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from sys import argv, exit
 from instaloader import Instaloader, Post
 from instaloader.exceptions import LoginRequiredException, BadResponseException

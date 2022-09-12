@@ -1,7 +1,6 @@
-#
-# Software para verificar se um determinado usuário curtiu uma foto específica
-# Autor: Lucas Vieira de Jesus <lucas.engen.cc@gmail.com>
-# Funciona com contas públicas e privadas (desde que você siga a conta privada)
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# Author: Lucas Vieira de Jesus <lucas.engen.cc@gmail.com>
 
 import instaloader
 from sys import exit, argv
