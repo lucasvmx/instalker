@@ -107,9 +107,9 @@ def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_st
                 continue
             break
         
-        timeout = calculate_random_timeout()
-        info("trying again in {} seconds".format(timeout))
-        sleep(timeout)
+        new_timeout = calculate_random_timeout(timeout)
+        info("trying again in {} seconds".format(new_timeout))
+        sleep(new_timeout)
 
         while True:
             current_followers = get_followers(instance, profile_name)
@@ -132,6 +132,6 @@ def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_st
                     info("{} started to follow you".format(follower))
                     send_message("{} começou a te seguir".format(follower))
         
-        timeout = calculate_random_timeout()
-        info("trying again in {} seconds".format(timeout))
-        sleep(timeout)
+        new_timeout = calculate_random_timeout(timeout)
+        info("trying again in {} seconds".format(new_timeout))
+        sleep(new_timeout)
