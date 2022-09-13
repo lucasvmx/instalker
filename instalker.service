@@ -6,7 +6,7 @@ Type=simple
 ExecStart=python3 /opt/instalker/main.py --snapshot 12h
 WorkingDirectory=/opt/instalker
 Restart=always
-RestartSec=10s
+RestartSec=60s
 
 [Install]
 WantedBy=multi-user.target

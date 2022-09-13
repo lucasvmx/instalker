@@ -1,17 +1,23 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from random import random
 import instaloader
 from time import sleep
 from sys import exit
 from bot import send_message
 from logging import info, error
+from random import randint
 
 # User actions ID's
 FOLLOWED = 1
 UNFOLLOWED = 2
 STAYED = 3
 NOT_FOLLOWEE = 4
+
+def calculate_random_timeout(predefined_interval: int):
+    timeout = randint(predefined_interval, predefined_interval * 2)
+    return timeout
 
 def get_followers(instance: instaloader.Instaloader, profile_name: str):
 
@@ -100,8 +106,11 @@ def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_st
                 sleep(300)
                 continue
             break
-
+        
+        timeout = calculate_random_timeout()
+        info("trying again in {} seconds".format(timeout))
         sleep(timeout)
+
         while True:
             current_followers = get_followers(instance, profile_name)
             if len(current_followers) == 0:
@@ -123,4 +132,6 @@ def do_snapshot(instance: instaloader.Instaloader, profile_name: str, timeout_st
                     info("{} started to follow you".format(follower))
                     send_message("{} começou a te seguir".format(follower))
         
+        timeout = calculate_random_timeout()
+        info("trying again in {} seconds".format(timeout))
         sleep(timeout)
